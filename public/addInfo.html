@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <title>Trivia Game - Assignment 4 - Itsaraphong</title>
+    <link rel='stylesheet' type='text/css' href='semantic/dist/semantic.min.css'>
+    <script src='http://code.jquery.com/jquery-1.9.1.min.js'></script>
+    <script src='semantic/dist/semantic.min.js'></script>
+</head>
+
+<body>
+
+		<div id="scoreIn"></div>
+		<img id="picIn"></img>
+		<div id="namePlace"></div>
+
+<form class='ui form addQuestion'>
+	<div class='field'>
+		<label class='left large questionPlace'>Add item</label>
+		<input type='text' class='newCat' name='addCat-holder' placeholder='Add Cat'>
+		<input type='text' class='newName' name='addName-holder' placeholder='Add Name'>
+		<input type='text' class='newUrl' name='addUrl-holder' placeholder='Add URL'>
+	</div>
+</form>
+<button id='addBut'class='jui fluid pink button' type='button'>Question</button>
+
+
+<form class='ui form addScore'>
+	<div class='field'>
+		<label class='left large questionPlace'>Score item</label>
+		<input type='text' class='newUserName' name='addUserName-holder' placeholder='Add Nmae'>
+		<input type='text' class='newScore' name='addScore-holder' placeholder='Add Score'>
+	</div>
+</form>
+<button id='addScoreBut'class='jui fluid pink button' type='button'>Score</button>
+
+
+
+<script src='js/app.js'></script>
+
+</body>
+
+</html>

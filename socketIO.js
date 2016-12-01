@@ -13,11 +13,8 @@ console.log('Socket listening on port 3001');
 var users =[],
     connections = [];
 
-/********************************************************
-* request opton to send to server
-* para data - {path: <path>, method: <GET or POST>, <data: <data>>}
-* return the json format for the request to server
-********************************************************/
+//option for http request
+// para - json obj contain: (path, method, data)
 var requestOption = function(para) {   
 
     //default option
@@ -47,18 +44,12 @@ var requestOption = function(para) {
 
 //socket io connection
 io.sockets.on('connection', function(socket){
-
 	'use strict';
-
     //push client soocket in to connections list
     connections.push(socket);
     console.log('Connected sockets: %s', connections.length);
     
-    /********************************************************
-    * listen for a new user to connect
-    * para data             - {username: <name>}
-    * return all username   - {userList: [username: <name>, <more users name>]}
-    ********************************************************/
+    //listen for a new user to connect
     socket.on('new user', function(data) {
         socket.username = data;
         //push new user
@@ -67,40 +58,8 @@ io.sockets.on('connection', function(socket){
         io.sockets.emit('get users', users);
     });
 
-    /********************************************************
-    * listen for client to send request for picture question
-    * para data             - {category: <title>}
-    * return to all users   - {picture: <url>, answerId: <id>}
-    ********************************************************/
-    socket.on('question', function(data) {
-
-        //send POST request to server to retreive question picture and answer id
-        requestOption({
-            path: '/question',
-            method: 'POST',
-            data: data
-        }),
-        //call back of the POST request
-        function(err, res, body) {
-            if(err) {
-                console.log(err);
-            } else {
-                //send the answer to user have send to server
-                io.sockets.emit('get question', body);
-            }
-        }
-    });
-
-    /********************************************************
-    * listen for client answer
-    * para data             - {answerId: <id>, answer: <answer>}
-    * return to all users   - {result: <true or false>}
-    ********************************************************/
+    //listen for client answer
     socket.on('answer', function(data) {
-
-        //add username to data
-        data.username = socket.username.username;
-
         console.log(JSON.stringify(data));
 
         //send post request to server for check answer
@@ -114,24 +73,20 @@ io.sockets.on('connection', function(socket){
             if(err) {
                 console.log(err);
             } else {
+                //add user answer the question to body
+                body.answerer = socket.username.username;
+
                 //send the answer to user have send to server
                 io.sockets.emit('check answer', body);
             }
         });
     });
 
-    /********************************************************
-    * listen for client to request score
-    * para                  - NONE
-    * return to all users   - {score: [
-    *                               {username: <name>, userScore: <score>}
-    *                               <more users score>              
-    *                           ]}
-    ********************************************************/
+    //listen for client to request score
     socket.on('score', function() {
         var jsonData;
 
-        //send get request to server for users score
+        //send get request to server for user score
         request(
             requestOption({
                 path: '/score',
