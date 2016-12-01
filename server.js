@@ -174,6 +174,7 @@ app.post('/question', function(req,res){
   'use strict';
   console.log('question');
   var catValue = req.body.catagory;
+  console.log('CCCCCCCAAAAAAAAAAAAAAAAT ');
   console.log(catValue);
   var active = setCatagory(catValue);
 
@@ -182,24 +183,32 @@ app.post('/question', function(req,res){
   active.find({IdUse:{$exists:true}},
           {IdUse:1}).sort({IdUse:-1}).limit(1).exec(
           function(err, dataCount){
-      console.log('test -- ' + dataCount);
-    if(dataCount.length !== 0){
-        test = Math.floor(Math.random() * ((dataCount[0].IdUse+1) - 1) + 1);
-    }
-    console.log('test -- ' + test);
-        //retrive question
-    active.find({IdUse:test}).exec(
-      function(err, dataIn){
-        if(dataIn.length === 0){
-          console.log('No Question');
-          res.json({'question': 'No Question in DB', 'answerId':0});
-        }
-        else {
-          console.log('return');
-          res.json({'pic': dataIn[0].Picture,
-                    'answer':dataIn[0].Name});
-        }
-    });//end retrive question
+			  console.log('test #1 -- ' + dataCount);
+		    if(dataCount.length !== 0){
+		        test = Math.floor(Math.random() * ((dataCount[0].IdUse+1) - 1) + 1);
+				console.log('test #2 -- ' + test);
+			        //retrive question
+			    active.find({IdUse:test}).exec(
+			      function(err, dataIn){
+			        if(dataIn.length === 0){
+			          console.log('No Question');
+			          res.json({'question': 'No Question in DB', 'answerId':0});
+			        }
+			        else {
+			          console.log('return');
+					  console.log('ASDIUAHDUASHUDHA');
+					  console.log(dataIn);
+			          res.json({'pic': dataIn[0].Picture,
+			                    'answer':dataIn[0].Name});
+				   }
+			    });//end retrive question
+		    }
+			else
+			{
+				console.log("CRASH");
+				res.json({'pic': 'https://lonelyplanetimages.imgix.net/mastheads/93931301.jpg?sharp=10&vib=20&w=1200',
+						  'answer':'yes'});
+			}
   });//end RNG
   //});// setCatagory
 });
