@@ -7,11 +7,12 @@ var http = require('http'),
     io = require('socket.io').listen(server),
     request = require('request');
 
-console.log('Socket listening on port 3001');
+console.log('Socket listening on port 8080');
 
 //initualize users and socket connections
 var users =[],
-    connections = [];
+    connections = [],
+    userId = 0;
 
 /********************************************************
 * request opton to send to server
@@ -57,12 +58,26 @@ io.sockets.on('connection', function(socket){
     /********************************************************
     * listen for a new user to connect
     * para data             - {username: <name>}
-    * return all username   - {userList: [username: <name>, <more users name>]}
+    * return all username   - [{userId: <id>, username: <name>, life: 3}, <more users name>]
     ********************************************************/
     socket.on('new user', function(data) {
-        socket.username = data;
-        //push new user
-        users.push(socket.username);
+
+        //increse userId by 1
+        userId += 1;
+
+        //add new username and userId to socket
+        socket.username = data.username;
+        socket.userId = userId;
+
+        var user = {
+            userId: userId,
+            username: socket.username,
+            life: 3
+        }
+
+        //push new username in to users array
+        users.push(user);
+
         //update new user has connected
         io.sockets.emit('get users', users);
     });
@@ -99,7 +114,7 @@ io.sockets.on('connection', function(socket){
     socket.on('answer', function(data) {
 
         //add username to data
-        data.username = socket.username.username;
+        data.username = socket.username;
 
         console.log(JSON.stringify(data));
 
@@ -152,9 +167,20 @@ io.sockets.on('connection', function(socket){
 
     //disconnect
     socket.on('disconnect', function() {
-        //disconnect user
-        users.splice(users.indexOf(socket.username),1);
-        console.log('Disconnect socket: %s', socket.username);
+
+        //loop each users
+        users.some(function(value, index) {
+
+            //check if userId match socket userId
+            if(value.userId === socket.userId) {
+                //remove username from users array
+                users.splice(index,1);
+                console.log('Disconnect socket: %s', socket.username);
+
+                //break out of some loop (for loop)
+                return true;
+            }
+        });
 
         //update list of users on client side
         io.sockets.emit('get users', users);
