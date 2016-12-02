@@ -9,7 +9,7 @@ var main = function (data)
 
 $(document).ready(main);
 
-function drawImage(image,xnumberOfTiles,ynumberOfTiles,arrayXTiles)
+function drawImage(image,xnumberOfTiles,ynumberOfTiles,array)
 {
     var ctx = getContext();
     ctx.imageSmoothingEnabled = true;
@@ -18,30 +18,36 @@ function drawImage(image,xnumberOfTiles,ynumberOfTiles,arrayXTiles)
 
     img.src = image; // Set source path
 
-    var i=0,
-        j=0;
-    var sx=0, sy=0,sWidth/*=img.width/(xnumberOfTiles) */, sHeight/*=img.height/(ynumberOfTiles)*/,
+    var randomIndex= 0,
+        xpoint=0,
+        ypoint=0;
+
+    var sx=0, sy=0,sWidth, sHeight,
     dx=0,dy=0, dWidth=canvas.width/xnumberOfTiles, dHeight=canvas.height/ynumberOfTiles;
 
     img.onload = function()
     {
-        sWidth=img.width/(xnumberOfTiles);
-        sHeight=img.height/(ynumberOfTiles);
-        i = Math.floor(Math.random() * arrayXTiles.length);
-        j = Math.floor(Math.random() * ynumberOfTiles);
-        ctx.drawImage(
-                        img,
-                        arrayXTiles[i]*(sx+sWidth),
-                        j*(sy+sHeight),
-                        sWidth,
-                        sHeight,
-                        arrayXTiles[i]* (dx+dWidth),
-                        j * (dy+dHeight),
-                        dWidth,
-                        dHeight
-                    );
+        if(array.length > 0)
+        {
+            sWidth=img.width/(xnumberOfTiles);
+            sHeight=img.height/(ynumberOfTiles);
 
-        arrayXTiles.splice(i,1);
+            randomIndex = Math.floor(Math.random() * array.length);
+            xpoint= array[randomIndex][0];
+            ypoint = array[randomIndex][1];
+            ctx.drawImage(
+                            img,
+                            xpoint *(sx+sWidth),
+                            ypoint  *(sy+sHeight),
+                            sWidth,
+                            sHeight,
+                            xpoint * (dx+dWidth),
+                            ypoint * (dy+dHeight),
+                            dWidth,
+                            dHeight
+                        );
+            array.splice(randomIndex,1);
+        }
     };
 }
 
@@ -52,21 +58,18 @@ function clearTimer(interval)
 
 var Setup = function(img, callback)
 {
-
-    var counter=15; /*seconds*/
-    var refreshRate=5; /*tiles per seconds*/
+    var counter=10; /*seconds*/
+    var refreshRate=2; /*tiles per seconds*/
     var images= img;
     var imageIndex=0;
     var xnumberOfTiles=15;
-    var ynumberOfTiles=3,
+    var ynumberOfTiles=5,
     interval,
+    arrayYTiles=[];
     arrayXTiles=[];
+    var array= twoDimAraray(xnumberOfTiles,ynumberOfTiles);
 
-    var i=0,j=0;
-    for(i =0; i < xnumberOfTiles*refreshRate;i++)
-    {
-        arrayXTiles.push(i % xnumberOfTiles);
-    }
+
     var timer=counter*refreshRate;
 
     interval = setInterval(function()
@@ -78,7 +81,7 @@ var Setup = function(img, callback)
         $('body p').remove();
         $('body').prepend('<p>time left:'+Math.floor(timer / refreshRate)+' seconds  </p>');
         timer--;
-        drawImage(images,xnumberOfTiles,ynumberOfTiles,arrayXTiles);
+        drawImage(images,xnumberOfTiles,ynumberOfTiles,array );
 
     },1000/refreshRate);
 
@@ -119,3 +122,18 @@ function getContext()
 
     return ctx;
 }
+
+var twoDimAraray = function (row,col)
+{
+    var twoDArray=[];
+    var i=0,j=0;
+
+    for(i =0; i < row; i++)
+    {
+        for (j = 0; j < col; j++)
+        {
+            twoDArray.push([i ,j]);
+        }
+    }
+return twoDArray;
+};
